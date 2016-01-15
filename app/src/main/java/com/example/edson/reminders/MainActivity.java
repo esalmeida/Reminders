@@ -10,8 +10,10 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.sql.SQLException;
 
@@ -38,6 +40,13 @@ public class MainActivity extends AppCompatActivity {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        fListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id){
+                Toast.makeText(MainActivity.this, "clicked" + position, Toast.LENGTH_SHORT).show();
+            }
+
+        });
         Cursor cursor = fDbAdapter.fetchAllLembretes();
         //from colunas definidas no db
         String[] from = new String[]{LembreteDbAdapter.COL_CONTENT};
