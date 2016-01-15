@@ -1,36 +1,67 @@
 package com.example.edson.reminders;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.sql.SQLException;
+
+//Estabelece a logica da aplicacao
 public class MainActivity extends AppCompatActivity {
     private ListView fListView;
+    private LembreteDbAdapter fDbAdapter;
+    private LembreteSimpleCursorAdapter fCursorAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         fListView = (ListView) findViewById(R.id.listView);
-        //O arrayAdapter faz o papel de controlador seguindo o
+        fListView.setDivider(null);
+        fDbAdapter = new LembreteDbAdapter(this);
+        try {
+            fDbAdapter.open();
+            if(savedInstanceState == null){
+                fDbAdapter.deleteTodosLembretes();
+                fDbAdapter.createLembrete("prova de matematica dia 10/01", true);
+                fDbAdapter.createLembrete("prova de ingles dia 12/01", false);
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        Cursor cursor = fDbAdapter.fetchAllLembretes();
+        //from colunas definidas no db
+        String[] from = new String[]{LembreteDbAdapter.COL_CONTENT};
+        //to ids das views no layout
+        int[] to = new int[]{R.id.linha_texto};
+
+        //O cursorAdapter faz o papel de controlador seguindo o
         //modelo model-view-control
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+        fCursorAdapter = new LembreteSimpleCursorAdapter(
                 //contexto
-                this,
-                //layout (view)
+                MainActivity.this,
+                //o layout da linha
                 R.layout.lembretes_linha,
-                //linha (view)
-                R.id.linha_texto,
-                //dados (model) simulados para testar listview
-                new String[] {"primeira linha","segunda linha","terceira linha"}
+                //cursor
+                cursor,
+                //from colunas definidas no db
+                from,
+                //to os ids das views no layout
+                to,
+                //flag - nao usado
+                0
         );
-        fListView.setAdapter(arrayAdapter);
+        fListView.setAdapter(fCursorAdapter);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -56,13 +87,23 @@ public class MainActivity extends AppCompatActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()){
+            case R.id.action_new:
+                Log.d(getLocalClassName(), "cria um novo Lembrete");
+                return true;
+            case R.id.action_exit:
+                finish();
+                return true;
+            default:
+                return false;
         }
 
-        return super.onOptionsItemSelected(item);
+
+//        //noinspection SimplifiableIfStatement
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
+
+
     }
 }
