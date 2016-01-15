@@ -1,5 +1,7 @@
 package com.example.edson.reminders;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -15,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.lang.reflect.Array;
 import java.sql.SQLException;
 
 //Estabelece a logica da aplicacao
@@ -43,7 +46,29 @@ public class MainActivity extends AppCompatActivity {
         fListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id){
-                Toast.makeText(MainActivity.this, "clicked" + position, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "clicked" + position, Toast.LENGTH_SHORT).show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                ListView modeListView = new ListView(MainActivity.this);
+                String[] modes = new String[]{"Edit Lembrete", "Delete Lembrete"};
+                ArrayAdapter<String> modeAdapter = new ArrayAdapter<String>(MainActivity.this,
+                        android.R.layout.simple_list_item_1,android.R.id.text1, modes);
+                modeListView.setAdapter(modeAdapter);
+                builder.setView(modeListView);
+                final Dialog dialog = builder.create();
+                dialog.show();
+                modeListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+                   @Override
+                   public void onItemClick(AdapterView<?> parent, View view, int position, long id){
+                       //edit lembrete
+                       if(position == 0){
+                           Toast.makeText(MainActivity.this,"edit", Toast.LENGTH_SHORT).show();
+                       }else{
+                           Toast.makeText(MainActivity.this,"delete", Toast.LENGTH_SHORT).show();
+                       }
+                       dialog.dismiss();
+                   }
+                });
+
             }
 
         });
