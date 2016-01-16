@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Reminders</string>
-    <string name="action_exit">exit</string>
+    <string name="app_name">Lembretes</string>
+    <string name="action_exit">Termina</string>
     <string name="action_new">Novo Lembrete</string>
 </resources>
